@@ -1,5 +1,3 @@
-
-
 import boto3
 import json
 
@@ -25,7 +23,7 @@ def lambda_handler(event, context):
         response = ses_client.send_email(
             Source='Williamsebenezer437@gmail.com',  # Replace with your email address
             Destination={
-                'ToAddresses': ['Cikaylanre@gmail.com', 'macaulaytopsy@gmail.com', 'cwdederils@gmail.com']  # Replace with recipient email addresses
+                'ToAddresses': ['Cikaylanre@gmail.com', 'macaulaytopsy@gmail.com', 'Williamsebenezer437@gmail.com']  # Replace with recipient email addresses
             },
             Message={
                 'Subject': {'Data': subject},
