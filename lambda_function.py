@@ -31,12 +31,38 @@ def lambda_handler(event, context):
             }
         )
 
-        return {
+        return { 
             'statusCode': 200,
             'body': json.dumps('Email notification sent successfully')
         }
     else:
-        return {
-            'statusCode': 200,
-            'body': json.dumps('Instance is compliant')
-        }
+        # Check if the 'Name' tag value is 'Owner'
+        owner_tag_value = [tag['Value'] for tag in instance.tags if tag['Key'] == 'Name']
+        if owner_tag_value and owner_tag_value[0] != 'Owner':
+            # Terminate the instance if the 'Name' tag value is not 'Owner'
+            instance.terminate()
+            print(f"Terminating instance {instance_id} for having 'Name' tag value not equal to 'Owner'")
+            
+            subject = f"Non-compliant resource detected: EC2 Instance - {instance_id}"
+            message = f"Hello,\n\nA non-compliant EC2 instance was detected:\n\nInstance ID: {instance_id}\nViolation Reason: 'Name' tag value not equal to 'Owner'\n\nPlease take appropriate action to address this issue."
+            
+            response = ses_client.send_email(
+                Source='Williamsebenezer437@gmail.com',  # Replace with your email address
+                Destination={
+                    'ToAddresses': ['Cikaylanre@gmail.com', 'macaulaytopsy@gmail.com', 'Williamsebenezer437@gmail.com']  # Replace with recipient email addresses
+                },
+                Message={
+                    'Subject': {'Data': subject},
+                    'Body': {'Text': {'Data': message}}
+                }
+            )
+
+            return {
+                'statusCode': 200,
+                'body': json.dumps('Email notification sent successfully')
+            }
+        else:
+            return {
+                'statusCode': 200,
+                'body': json.dumps('Instance is compliant')
+            }
